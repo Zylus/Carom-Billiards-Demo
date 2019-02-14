@@ -238,7 +238,7 @@ MonoBehaviour:
   rb: {fileID: 273184576}
   tableBoundsGroup: {fileID: 1464341312}
   ballsGroup: {fileID: 699795630}
-  force: 250
+  force: 200
 --- !u!82 &273184578
 AudioSource:
   m_ObjectHideFlags: 0
@@ -496,7 +496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddc2b8e9338ef0e499e1ae0318cc5322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocityForMaxVolume: 30
+  velocityForMaxVolume: 50
 --- !u!1 &770520956
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,28 +21,20 @@ public class Ball : MonoBehaviour
     void OnCollisionEnter(Collision collision) {
         print(gameObject.ToString() + " is colliding with " + collision.collider);
         if(collision.collider.transform.IsChildOf(ballsGroup.transform)) {
-            PlayImpactAudio(collision.collider,true);
+            PlayImpactAudio(collision);
         }
         else if(collision.collider.transform.IsChildOf(tableBoundsGroup.transform)) {
-            PlayImpactAudio(collision.collider,false);
+            PlayImpactAudio(collision);
             
         }
     }
 
-    void PlayImpactAudio(Collider collider, bool collidingWithRigidbody) {
-        //TODO: fix "doubling" effect, use sqrtMagnitude, fix inconsistent velocities
+    void PlayImpactAudio(Collision collision) {
+        //TODO: fix "doubling" effect, use sqrtMagnitude
         float velocity;
-        bool playOnCollider = false;
         float volume;
-        if(collidingWithRigidbody) {
-            velocity = Math.Max(rb.velocity.magnitude, collider.GetComponent<Rigidbody>().velocity.magnitude);
-            playOnCollider = true;
-            print("Velocity is " + velocity.ToString());
-        }
-        else {
-            velocity = rb.velocity.magnitude;
-            print("Collider is static, so we're using local velocity at " + velocity.ToString());
-        }
+        velocity = collision.relativeVelocity.magnitude;
+        print("velocity: " + velocity.ToString());
         if(velocity >= velocityForMaxVolume) {
             print("Volume: MAX");
             volume = 1f;
@@ -57,17 +49,7 @@ public class Ball : MonoBehaviour
             return;
         }
 
-
-        if(playOnCollider) {
-            collider.GetComponent<Ball>().impactAudio.volume = volume;
-            print("Calling " + collider.ToString() + "'s AudioSource from " + gameObject.ToString());
-            collider.GetComponent<Ball>().impactAudio.Play();
-        }
-
-        else {
-            impactAudio.volume = volume;
-            print("Playing AudioSource locally at " + gameObject.ToString());
-            impactAudio.Play();
-        }
+        impactAudio.volume = volume;
+        impactAudio.Play();
     }
 }
