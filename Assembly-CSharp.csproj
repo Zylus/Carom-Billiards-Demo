@@ -56,6 +56,7 @@
      <Compile Include="Assets\Scripts\AudioManager.cs" />
      <Compile Include="Assets\Scripts\Ball.cs" />
      <Compile Include="Assets\Scripts\BallManager.cs" />
+     <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\PlayerBall.cs" />
      <Compile Include="Assets\Scripts\SceneSwitcher.cs" />
  <Reference Include="Unity.TextMeshPro.Editor">
