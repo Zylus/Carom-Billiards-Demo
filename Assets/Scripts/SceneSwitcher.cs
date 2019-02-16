@@ -5,7 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class SceneSwitcher : MonoBehaviour
 {
-    public void switchToMainScene() {
+    public void SwitchToMainScene()
+    {
+        Time.timeScale = 1;
         SceneManager.LoadScene("MainGame");
+    }
+    
+    public void SwitchToMainMenu()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

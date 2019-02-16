@@ -1,6 +1,6 @@
 {
   "ProjectFilePath": "d:\\git_projects\\Carom Billiards Demo\\Assembly-CSharp.csproj",
-  "TargetFramework": "v4.5",
+  "TargetFramework": "v4.7.1",
   "TagHelpers": [],
   "Configuration": {
     "ConfigurationName": "UnsupportedRazor",

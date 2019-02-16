@@ -118,7 +118,6 @@ d251bf88db6c95a6b1aa0b69298da9ef UnityEngine.SpatialTracking.dll:UnityEngine.Spa
 94017dcc9f00fe671ea7dc427b4da011 Unity.TextMeshPro.dll:TMPro.TMP_SpriteAsset
 4471ae1ca7fbdc9cd9ea4a9d30e59f29 Assembly-CSharp.dll:.Ball
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.SceneSwitcher
-9c997ebfe73104078be3d259550dec63 Assembly-CSharp.dll:.AudioManager
 b3ab2106268377ffe25dd18ac23dca28 Unity.TextMeshPro.dll:TMPro.TMP_Asset
 71bb6a6b6c8f052f948db64c7dd3ca4f Unity.Analytics.Editor.dll:UnityEditor.Analytics.AnalyticsEventTrackerEditor
 71bb6a6b6c8f052f948db64c7dd3ca4f Unity.TextMeshPro.dll:TMPro.TMP_SpriteAnimator
@@ -138,7 +137,7 @@ ad9173d3a69d99153f38ed4b62226129 UnityEngine.Networking.dll:UnityEngine.Networki
 9b895dcabbc1faf095c000c32d471fd0 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 5887ef1bc706b22b773d253fd443ceef UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
 250de1d78e95dc7d4f1d53a6c6490784 Assembly-CSharp.dll:.BallManager
-8a5907dbd3865fb96f4e851470ed4b15 Assembly-CSharp.dll:.PlayerBall
+78b77a32f3b0a74728ae5886bdb23f83 Assembly-CSharp.dll:.PlayerBall
 510fefd6a544e16a3ffefa557ddcba39 Unity.TextMeshPro.dll:TMPro.PackageResourceImporterWindow
 aa82b3ce4c0c9b227036c0337315c5d3 Unity.TextMeshPro.dll:TMPro.TMP_FontAsset
 e51c09a4cc447f11db225afcd8e3e490 Unity.TextMeshPro.dll:TMPro.TMP_Settings
@@ -161,5 +160,8 @@ d251bf88db6c95a6b1aa0b69298da9ef UnityEngine.SpatialTracking.dll:UnityEngine.Spa
 d791aa6007fa3640be1164ea75bb087d Unity.TextMeshPro.dll:TMPro.TMP_StyleSheet
 c6666661329916e218bee7f5e79e60f5 Unity.TextMeshPro.dll:TMPro.TextMeshPro
 3165968ba45c74472d279ba04455fccb Unity.TextMeshPro.dll:TMPro.TMP_ColorGradient
-8649814970b42d345b89944b862453cc Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
 3d2d8d21a02f5da1f832083b99af05d1 Assembly-CSharp.dll:.CameraController
+8649814970b42d345b89944b862453cc Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
+cb8fb03dde3778d31b7a0b0fd4c4cd6e Assembly-CSharp.dll:.OptionsMenu
+04612e240136e91f39727504df044f6b Assembly-CSharp.dll:.MainMenu
+dbbaa226798c25f470e6d5af63e7b22e Assembly-CSharp.dll:.DataManager

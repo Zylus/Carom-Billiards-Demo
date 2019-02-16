@@ -17,8 +17,19 @@ public class PlayerBall : Ball
     List<GameObject> targetBalls = new List<GameObject>();
     List<GameObject> ballsHitThisShot = new List<GameObject>();
     int score = 0;
+    int shots = 0;
+    float timer = 0f;
+    int maxScore = 3;
+    string minutes;
+    string seconds;
     bool scoredThisShot = false;
     public Text scoreText;
+    public Text shotText;
+    public Text timeSpentText;
+    public GameObject gameWinMenu;
+    public GameObject pauseMenu;
+    public GameObject optionsMenu;
+    DataManager dataManager;
 
     protected override void Start()
     {
@@ -29,32 +40,47 @@ public class PlayerBall : Ball
             if(ball.gameObject != gameObject)
                 targetBalls.Add(ball.gameObject);
         }
+        dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
     }
 
     protected override void Update()
     {
         base.Update();
-        checkObjective();
-        checkBallStatus();
+        UpdateTimer();
+        CheckObjective();
+        CheckBallStatus();
         
 
         // Input handling
-        if (Input.GetKey("space"))
+        if(Input.GetKey("space"))
         {
             if(!duringShoot)
-                chargeForce();
+                ChargeForce();
         }
-        if (Input.GetKeyUp("space"))
+        if(Input.GetKeyUp("space"))
         {
             if(!duringShoot)
-                fireBall();
+                FireBall();
+        }
+        if(Input.GetKeyDown("escape"))
+        {
+            if(!optionsMenu.activeSelf)
+                TogglePauseMenu();
         }
 
-        updateAimAssistLine();
-        fadeOutForceBar();        
+        UpdateAimAssistLine();
+        FadeOutForceBar();        
     }
 
-    void checkBallStatus()
+    void UpdateTimer()
+    {
+        timer += Time.deltaTime;
+        minutes = Mathf.Floor(timer / 60).ToString("00");
+        seconds = Mathf.Floor(timer % 60).ToString("00");
+        timeSpentText.text = minutes + ":" + seconds;
+    }
+
+    void CheckBallStatus()
     {
         if(duringShoot && !forceBar.activeSelf)
         {
@@ -78,7 +104,7 @@ public class PlayerBall : Ball
         }
     }
 
-    void checkObjective() {
+    void CheckObjective() {
         if(!scoredThisShot && duringShoot)
         {
             bool objectiveReached = true;
@@ -94,12 +120,25 @@ public class PlayerBall : Ball
                 score++;
                 scoreText.text = "Score: " + score.ToString();
                 scoredThisShot = true;
+                if(score >= maxScore)
+                {
+                    GameWon();
+                }
             }
         }
         
     }
 
-    void updateAimAssistLine()
+    void GameWon()
+    {
+        gameWinMenu.transform.Find("StatsText").GetComponent<Text>().text = "Duration: " + minutes + ":" + seconds + "\nShots taken: " + shots.ToString();
+        gameWinMenu.SetActive(true);
+        Time.timeScale = 0;
+        GameStats currentStats = new GameStats(score,shots,timer);
+        dataManager.WriteToFile("lastgame.json",JsonUtility.ToJson(currentStats));
+    }
+
+    void UpdateAimAssistLine()
     {
         RaycastHit hit;
         Vector3 position = transform.position;
@@ -111,7 +150,7 @@ public class PlayerBall : Ball
         }
     }
 
-    void fadeOutForceBar() {
+    void FadeOutForceBar() {
         if(!isCharging && forceBar.activeSelf)
         {
             forceBar.GetComponent<CanvasGroup>().alpha -= Time.deltaTime / 1f;
@@ -122,7 +161,7 @@ public class PlayerBall : Ball
         }
     }
 
-    void chargeForce()
+    void ChargeForce()
     {
         // Start charging force
             if(!isCharging)
@@ -160,21 +199,17 @@ public class PlayerBall : Ball
             forceBar.transform.Find("Text").GetComponent<Text>().text = ((int)(force*100)).ToString() + "%";
     }
 
-    void fireBall()
+    void FireBall()
     {
         rb.AddForce(transform.forward * force * forceModifier,ForceMode.Impulse);
         isCharging = false;
         duringShoot = true;
+        shots++;
+        shotText.text = "Shots: " + shots.ToString();
     }
 
-    public void toggleAimAssist() {
-        if(lr.gameObject.activeSelf)
-            lr.gameObject.SetActive(false);
-        else
-            lr.gameObject.SetActive(true);
-    }
-
-    protected override void OnCollisionEnter(Collision collision) {
+    protected override void OnCollisionEnter(Collision collision)
+    {
         if(collision.collider.transform.IsChildOf(ballsGroup.transform))
         {
             if(targetBalls.Contains(collision.collider.gameObject) && !ballsHitThisShot.Contains(collision.collider.gameObject))
@@ -185,5 +220,19 @@ public class PlayerBall : Ball
         }
         else if(collision.collider.transform.IsChildOf(tableBoundsGroup.transform))
             PlayImpactAudio(collision, false);
+    }
+
+    void TogglePauseMenu()
+    {
+        if(pauseMenu.gameObject.activeSelf)
+        {
+            pauseMenu.gameObject.SetActive(false);
+            Time.timeScale = 1;
+        }
+        else
+        {
+            pauseMenu.gameObject.SetActive(true);
+            Time.timeScale = 0;
+        }
     }
 }
