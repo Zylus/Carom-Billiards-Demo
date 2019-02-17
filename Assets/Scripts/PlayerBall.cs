@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,9 +14,12 @@ public class PlayerBall : Ball
     bool isCharging = false;
     bool chargeReverse = false;
     bool duringShoot = false;
+    bool replayingShot = false;
     List<Rigidbody> ballBodies = new List<Rigidbody>();
     List<GameObject> targetBalls = new List<GameObject>();
     List<GameObject> ballsHitThisShot = new List<GameObject>();
+    List<GameObject> ballsRemaining = new List<GameObject>();
+    GameObject finalBallMissing;
     int score = 0;
     int shots = 0;
     float timer = 0f;
@@ -29,7 +33,15 @@ public class PlayerBall : Ball
     public GameObject gameWinMenu;
     public GameObject pauseMenu;
     public GameObject optionsMenu;
+    public GameObject ballsHitPanel;
     DataManager dataManager;
+    public Button replayButton;
+    SaveState lastSave;
+    public AudioSource scoreSound;
+    bool hypeMode = false;
+    Vector3 tempCameraOffset;
+    Vector3 tempCameraPosition;
+    Vector3 tempCameraRotation;
 
     protected override void Start()
     {
@@ -40,6 +52,8 @@ public class PlayerBall : Ball
             if(ball.gameObject != gameObject)
                 targetBalls.Add(ball.gameObject);
         }
+        ballsHitPanel.transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+        ballsHitPanel.transform.GetChild(1).GetComponent<Image>().color = Color.grey;
         dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
     }
 
@@ -49,17 +63,17 @@ public class PlayerBall : Ball
         UpdateTimer();
         CheckObjective();
         CheckBallStatus();
-        
+        HypeMode();
 
         // Input handling
         if(Input.GetKey("space"))
         {
-            if(!duringShoot)
+            if(!duringShoot && !replayingShot)
                 ChargeForce();
         }
         if(Input.GetKeyUp("space"))
         {
-            if(!duringShoot)
+            if(!duringShoot && !replayingShot)
                 FireBall();
         }
         if(Input.GetKeyDown("escape"))
@@ -70,6 +84,75 @@ public class PlayerBall : Ball
 
         UpdateAimAssistLine();
         FadeOutForceBar();        
+    }
+
+    void HypeMode()
+    {
+        if(duringShoot && !scoredThisShot)
+        {
+            if(finalBallMissing && rb.velocity != Vector3.zero && Vector3.Distance(transform.position, finalBallMissing.transform.position) < 20)
+            {
+                if(!hypeMode)
+                {
+                    tempCameraOffset = mainCamera.GetComponent<CameraController>().offset;
+                    tempCameraPosition = mainCamera.transform.position;
+                    tempCameraRotation = mainCamera.transform.eulerAngles;
+                    hypeMode = true;
+                }
+                Vector3 newOffset = new Vector3();
+                if(Vector3.Distance(mainCamera.transform.position, transform.position) > 30)
+                {
+                    newOffset = Vector3.MoveTowards(mainCamera.transform.position, transform.position, 30 * Time.deltaTime) - transform.position;
+                    mainCamera.GetComponent<CameraController>().offset = newOffset;
+                }
+            }
+            else
+            {
+                if(hypeMode)
+                {
+                    ResetHype();
+                }
+            }
+        }
+        else
+        {
+            if(hypeMode)
+            {
+                ResetHype();
+            }
+        }
+    }
+
+    void ResetHype()
+    {
+        mainCamera.transform.position = tempCameraPosition;
+        mainCamera.GetComponent<CameraController>().offset = tempCameraOffset;
+        mainCamera.transform.eulerAngles = tempCameraRotation;
+        hypeMode = false;
+    }
+
+    public void ReplayLastShot()
+    {
+        if(lastSave != null)
+        {
+            replayButton.interactable = false;
+            replayingShot = true;
+            foreach(Transform ball in ballsGroup.transform)
+            {
+                SavedBall correctBall = lastSave.GetSavedBall(ball.gameObject.name);
+                ball.position = correctBall.position;
+                ball.eulerAngles = correctBall.eulerAngles;
+            }
+            force = lastSave.force;
+            forceBar.GetComponent<Slider>().value = force;
+            forceBar.transform.Find("Text").GetComponent<Text>().text = ((int)(force*100)).ToString() + "%";
+            forceBar.SetActive(true);
+            mainCamera.transform.position = lastSave.cameraPosition;
+            mainCamera.transform.eulerAngles = lastSave.cameraAngle;
+            mainCamera.GetComponent<CameraController>().offset = lastSave.cameraOffset;
+            FireBall();
+        }
+        
     }
 
     void UpdateTimer()
@@ -95,9 +178,19 @@ public class PlayerBall : Ball
             }
             if(everyBallStopped)
             {
+                ballsHitPanel.transform.GetChild(0).GetComponent<Image>().color = Color.grey;
+                ballsHitPanel.transform.GetChild(1).GetComponent<Image>().color = Color.grey;
                 duringShoot = false;
                 ballsHitThisShot.Clear();
                 scoredThisShot = false;
+                if(replayingShot)
+                {
+                    replayingShot = false;
+                    
+                }
+                replayButton.interactable = true;
+                ballsRemaining.Clear();
+                finalBallMissing = null;
             }
                 
             
@@ -105,7 +198,7 @@ public class PlayerBall : Ball
     }
 
     void CheckObjective() {
-        if(!scoredThisShot && duringShoot)
+        if(!scoredThisShot && duringShoot && !replayingShot)
         {
             bool objectiveReached = true;
             foreach(GameObject target in targetBalls)
@@ -117,6 +210,7 @@ public class PlayerBall : Ball
             }
             if(objectiveReached)
             {
+                scoreSound.Play();
                 score++;
                 scoreText.text = "Score: " + score.ToString();
                 scoredThisShot = true;
@@ -201,11 +295,30 @@ public class PlayerBall : Ball
 
     void FireBall()
     {
-        rb.AddForce(transform.forward * force * forceModifier,ForceMode.Impulse);
+        if(!replayingShot)
+        {
+            shots++;
+            shotText.text = "Shots: " + shots.ToString();
+            SaveState(ballsGroup, force);
+            replayButton.interactable = false;
+        }
         isCharging = false;
         duringShoot = true;
-        shots++;
-        shotText.text = "Shots: " + shots.ToString();
+        rb.AddForce(transform.forward * force * forceModifier,ForceMode.Impulse);
+    }
+
+    void SaveState(GameObject ballsContainer, float force)
+    {
+        lastSave = new SaveState();
+        foreach(Transform ball in ballsContainer.transform)
+        {
+            SavedBall ballToSave = new SavedBall(ball.gameObject.name, ball.position, ball.eulerAngles);
+            lastSave.SaveBall(ballToSave);
+        }
+        lastSave.force = force;
+        lastSave.cameraPosition = mainCamera.transform.position;
+        lastSave.cameraAngle = mainCamera.transform.eulerAngles;
+        lastSave.cameraOffset = mainCamera.GetComponent<CameraController>().offset;
     }
 
     protected override void OnCollisionEnter(Collision collision)
@@ -215,6 +328,19 @@ public class PlayerBall : Ball
             if(targetBalls.Contains(collision.collider.gameObject) && !ballsHitThisShot.Contains(collision.collider.gameObject))
             {
                 ballsHitThisShot.Add(collision.collider.gameObject);
+                ballsRemaining = targetBalls.Except(ballsHitThisShot).ToList();
+                if(ballsRemaining.Count() == 1)
+                {
+                    finalBallMissing = ballsRemaining[0];
+                }
+                if(collision.collider.gameObject.name == "YellowBall")
+                {
+                    ballsHitPanel.transform.GetChild(0).GetComponent<Image>().color = Color.yellow;
+                }
+                else if(collision.collider.gameObject.name == "RedBall")
+                {
+                    ballsHitPanel.transform.GetChild(1).GetComponent<Image>().color = Color.red;
+                }
             }
             PlayImpactAudio(collision, true);
         }

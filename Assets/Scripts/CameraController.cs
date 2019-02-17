@@ -5,8 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public GameObject playerBall; // Reference to the player's ball
-    
-    private Vector3 offset; // Vector distance between camera object and player's ball
+    public Vector3 offset; // Vector distance between camera object and player's ball
     private int rotationRate = 50;
 
     void Start()

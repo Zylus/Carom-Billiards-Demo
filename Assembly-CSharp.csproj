@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\OptionsMenu.cs" />
      <Compile Include="Assets\Scripts\PlayerBall.cs" />
      <Compile Include="Assets\Scripts\PlayerSettings.cs" />
+     <Compile Include="Assets\Scripts\SaveState.cs" />
      <Compile Include="Assets\Scripts\SceneSwitcher.cs" />
  <Reference Include="Unity.TextMeshPro.Editor">
  <HintPath>D:/git_projects/Carom Billiards Demo/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

@@ -9,6 +9,7 @@ public class OptionsMenu : MonoBehaviour
 {
     GameObject aimAssist;
     bool aimAssistActive = true;
+    bool hypeModeActive = true;
     float volume = 1f;
     string currentScene;
     public AudioMixer mainMixer; // Reference to the main AudioMixer
@@ -17,6 +18,7 @@ public class OptionsMenu : MonoBehaviour
     string settingsFilePath;
     public GameObject masterVolumeSlider;
     public GameObject aimAssistCheckbox;
+    public GameObject hypeModeCheckbox;
     bool duringSetup;
 
     void Start()
@@ -46,8 +48,10 @@ public class OptionsMenu : MonoBehaviour
 
         aimAssistActive = loadedSettings.aimAssistActive;
         volume = loadedSettings.volume;
+        hypeModeActive = loadedSettings.hypeModeAllowed;
         aimAssistCheckbox.GetComponent<Toggle>().isOn = aimAssistActive;
         masterVolumeSlider.GetComponent<Slider>().value = volume;
+        hypeModeCheckbox.GetComponent<Toggle>().isOn = hypeModeActive;
     }
 
     public void ToggleOptionsMenu()
@@ -65,7 +69,7 @@ public class OptionsMenu : MonoBehaviour
 
     void WriteSettingsToFile(string path)
     {
-        PlayerSettings currentSettings = new PlayerSettings(aimAssistActive, volume);
+        PlayerSettings currentSettings = new PlayerSettings(aimAssistActive, volume, hypeModeActive);
         dataManager.WriteToFile(path,JsonUtility.ToJson(currentSettings));
     }
 
@@ -92,6 +96,12 @@ public class OptionsMenu : MonoBehaviour
             aimAssistActive = !aimAssistActive;
             ApplySettings();
         }
+    }
+
+    public void ToggleHypeAllowed()
+    {
+        if(!duringSetup)
+            hypeModeActive = !hypeModeActive;
     }
 
     public void SetVolume(float volume)
