@@ -23,6 +23,7 @@ public class Ball : MonoBehaviour
 
     protected virtual void Update()
     {
+        //Force-stop the ball if it's below a certain speed
         if(rb.velocity.sqrMagnitude <= forceStopThreshold && rb.velocity.sqrMagnitude > 0.0001f)
         {
             rb.velocity = Vector3.zero;

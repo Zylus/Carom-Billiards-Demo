@@ -5,6 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerSettings
 {
+    // Class that stores settings
+    
     public bool aimAssistActive = true;
     public float volume = 1f;
     public bool hypeModeAllowed = true;

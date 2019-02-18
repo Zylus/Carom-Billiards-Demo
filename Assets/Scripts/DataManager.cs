@@ -5,11 +5,13 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    public string baseFilePath = "";
+    // Class that handles file IO
+
+    public string baseFilePath = ""; // Path that the filename gets appended to
 
     void Start()
     {
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(this.gameObject); // Ensure this instance persists between scenes
     }
 
     public void WriteToFile(string path, string data)

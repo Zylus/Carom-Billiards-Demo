@@ -491,6 +491,7 @@ GameObject:
   - component: {fileID: 273184577}
   - component: {fileID: 273184578}
   - component: {fileID: 273184579}
+  - component: {fileID: 273184580}
   m_Layer: 0
   m_Name: PlayerBall
   m_TagString: Untagged
@@ -612,16 +613,18 @@ MonoBehaviour:
   forceStopThreshold: 2
   mainCamera: {fileID: 585362892}
   forceBar: {fileID: 1230170206}
-  lr: {fileID: 222255148}
-  scoreText: {fileID: 164120933}
-  shotText: {fileID: 800414835}
-  timeSpentText: {fileID: 4747159}
   gameWinMenu: {fileID: 1248427119}
   pauseMenu: {fileID: 552212854}
   optionsMenu: {fileID: 1918723451}
   ballsHitPanel: {fileID: 1838384065}
+  lr: {fileID: 222255148}
+  scoreText: {fileID: 164120933}
+  shotText: {fileID: 800414835}
+  timeSpentText: {fileID: 4747159}
   replayButton: {fileID: 1512021385}
   scoreSound: {fileID: 273184579}
+  hypeSound: {fileID: 273184580}
+  hypeModeAllowed: 0
 --- !u!82 &273184578
 AudioSource:
   m_ObjectHideFlags: 0
@@ -733,6 +736,103 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 31d2033d44016d84f81fa0d38f75855f, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.8
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!82 &273184580
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 273184571}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 49fa98e4b16daec429a33b7c95a13388,
+    type: 2}
+  m_audioClip: {fileID: 8300000, guid: 803314dc301b2ee4d9921e36f582de68, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1383,7 +1483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1503,8 +1603,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerBall: {fileID: 273184571}
-  hypeMode: 0
   offset: {x: 0, y: 0, z: 0}
+  cameraMovementDisabled: 0
 --- !u!1 &699795630
 GameObject:
   m_ObjectHideFlags: 0
@@ -1940,7 +2040,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 200, y: -26.771885}
+  m_AnchoredPosition: {x: 200, y: -26.771912}
   m_SizeDelta: {x: 160, y: 53.54377}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &886224571
@@ -2152,11 +2252,11 @@ RectTransform:
   m_Father: {fileID: 734338062}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 220, y: 210}
-  m_SizeDelta: {x: -440, y: -420}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 360, y: 30}
+  m_Pivot: {x: 1, y: 1}
 --- !u!114 &899033710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2492,7 +2592,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

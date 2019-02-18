@@ -7,26 +7,27 @@ using UnityEngine.UI;
 
 public class OptionsMenu : MonoBehaviour
 {
-    GameObject aimAssist;
-    bool aimAssistActive = true;
-    bool hypeModeActive = true;
-    float volume = 1f;
-    string currentScene;
+    public GameObject masterVolumeSlider; // Reference to the slider controlling master volume
+    public GameObject aimAssistCheckbox; // Reference to the checkbox controlling aim assistance
+    public GameObject hypeModeCheckbox; // Reference to the checkbox controlling hype mode
     public AudioMixer mainMixer; // Reference to the main AudioMixer
     public AudioSource demoSound; // Reference to the AudioSource containing the demo sound to play in the options menu
-    DataManager dataManager;
-    string settingsFilePath;
-    public GameObject masterVolumeSlider;
-    public GameObject aimAssistCheckbox;
-    public GameObject hypeModeCheckbox;
-    bool duringSetup;
+
+    GameObject aimAssist; // Reference to the GameObject that displays the aim assist line
+    DataManager dataManager; // Reference to the Data Manager
+    PlayerBall playerBallScript; // Reference to the script attached to the player ball object
+    bool aimAssistActive = true; // Determines whether aim assistance is displayed
+    bool hypeModeAllowed = true; // Determines whether Hype Mode is allowed (zooming and sound effects while the player ball is approaching the second ball needed to hit)
+    float volume = 1f; // Master volume
+    string currentScene; // Name of the current scene
+    string settingsFilePath = "settings.json"; // Path to be appended to the Data Manager's base path
+    bool duringSetup; // Determines whether the options are still being set up
 
     void Start()
     {
         duringSetup = true;
         dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
-        settingsFilePath = dataManager.baseFilePath + "settings.json";
-        // read settings from file and initialise UI
+        // Read settings from file
         if(dataManager.FileExists(settingsFilePath))
         {
             LoadSettingsFromFile(settingsFilePath);
@@ -34,31 +35,40 @@ public class OptionsMenu : MonoBehaviour
         currentScene = SceneManager.GetActiveScene().name;
         if(currentScene == "MainGame")
         {
+            // Assign references
             aimAssist = GameObject.Find("DirectionIndicator");
+            playerBallScript = GameObject.Find("PlayerBall").GetComponent<PlayerBall>();
             ApplySettings();
         }
+        // Disable the options menu so it doesn't show up for the player
         gameObject.SetActive(false);
         duringSetup = false;
     }
 
     public void LoadSettingsFromFile(string path)
     {
+        // Read settings
         string data = dataManager.ReadFromFile(path);
         PlayerSettings loadedSettings = JsonUtility.FromJson<PlayerSettings>(data);
 
+        // Set variables
         aimAssistActive = loadedSettings.aimAssistActive;
         volume = loadedSettings.volume;
-        hypeModeActive = loadedSettings.hypeModeAllowed;
+        hypeModeAllowed = loadedSettings.hypeModeAllowed;
+
+        // Change UI elements to display the correct settings
         aimAssistCheckbox.GetComponent<Toggle>().isOn = aimAssistActive;
         masterVolumeSlider.GetComponent<Slider>().value = volume;
-        hypeModeCheckbox.GetComponent<Toggle>().isOn = hypeModeActive;
+        hypeModeCheckbox.GetComponent<Toggle>().isOn = hypeModeAllowed;
     }
 
     public void ToggleOptionsMenu()
     {
+        // Toggles active state of the Options Menu
         if(gameObject.activeSelf)
         {
             gameObject.SetActive(false);
+            // Stores current settings whenever the Options Menu is closed
             WriteSettingsToFile(settingsFilePath);
         }
         else
@@ -69,42 +79,41 @@ public class OptionsMenu : MonoBehaviour
 
     void WriteSettingsToFile(string path)
     {
-        PlayerSettings currentSettings = new PlayerSettings(aimAssistActive, volume, hypeModeActive);
+        // Create a PlayerSettings object with current settings, then save it
+        PlayerSettings currentSettings = new PlayerSettings(aimAssistActive, volume, hypeModeAllowed);
         dataManager.WriteToFile(path,JsonUtility.ToJson(currentSettings));
     }
 
-    public void ApplySettings() {
+    public void ApplySettings()
+    {
         if(currentScene == "MainGame")
         {
-            if(aimAssistActive)
-            {
-                aimAssist.SetActive(true);
-            }
-            else
-            {
-                aimAssist.SetActive(false);
-            }
+            // Activate the aim assist object if the player has enabled it
+            aimAssist.SetActive(aimAssistActive);
+            // Set the bool in the player ball script that controls Hype Mode
+            playerBallScript.hypeModeAllowed = hypeModeAllowed;
         }
-
-
     }
 
-    public void ToggleAimAssist()
+    public void ToggleAimAssist() // Called by clicking the checkbox
     {
-        if(!duringSetup)
+        if(!duringSetup) // This prevents the function from executing when we set aim assist manually during the setup phase
         {
             aimAssistActive = !aimAssistActive;
             ApplySettings();
         }
     }
 
-    public void ToggleHypeAllowed()
+    public void ToggleHypeAllowed() // Called by clicking the checkbox
     {
         if(!duringSetup)
-            hypeModeActive = !hypeModeActive;
+        {
+            hypeModeAllowed = !hypeModeAllowed;
+            ApplySettings();
+        }
     }
 
-    public void SetVolume(float volume)
+    public void SetVolume(float volume) // Called by changing the value of the slider
     {
         mainMixer.SetFloat("masterVolume", Mathf.Log(volume)*20);
         this.volume = volume;
